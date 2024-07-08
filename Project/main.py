@@ -35,9 +35,7 @@ class Personagem:
    def getContaBancaria(self):
       return self.__dinheiro
    
-   def reducaoSaude(self, dano=None):
-      if dano is None:
-         dano = randint(1, 5)
+   def reducaoSaude(self, dano):
       self.__saude -= dano
       if self.__saude < 0:
          self.__saude = 0
@@ -51,11 +49,16 @@ class Personagem:
       self.__felicidade -= reducao
       if self.__felicidade < 0:
          self.__felicidade = 0
+         print('Você está com depressão!')
+         self.reducaoSaude(35)
+
+   def aumentarAparencia(self, aumento):
+      self.__aparencia += aumento
 
    def reduzirAparencia(self, reducao):
-      self.__felicidade -= reducao
-      if self.__felicidade < 0:
-         self.__felicidade = 0
+      self.__aparencia -= reducao
+      if self.__aparencia < 0:
+         self.__aparencia = 0
 
    def aumentarDinheiro(self, aumento):
       self.__dinheiro += aumento
@@ -84,7 +87,7 @@ Saldo: {self.getContaBancaria()}'''
 
 class Jogo:
    def __init__(self) -> None:
-      self.personagem = Personagem(nome=nome, idade=18, sexo=genero, saude=randint(75, 100), 
+      self.personagem = Personagem(nome=nome, idade=0, sexo=genero, saude=randint(75, 100), 
                                     felicidade=randint(75, 100), 
                                     aparencia=randint(75, 100),
                                     nacionalidade=nacionalidade,
@@ -97,13 +100,17 @@ class Jogo:
          if escolha == 's':
             self.personagem.opcaoCrescer()
             self.ocorrenciaDeEvento()
-            print('Você pagou os boletos')
-            self.personagem.reduzirDinheiro(300)
-            self.personagem.reducaoSaude()
+            if self.personagem.getIdade() > 18:
+               print('\nVocê pagou os boletos')
+               self.personagem.reduzirDinheiro(300)
+            if self.personagem.getIdade() > 70:
+               print('\nVocê esta envelhecendo...')
+               self.personagem.reducaoSaude(20)
          else:
-            escolha = input('Deseja trabalhar? [S/N] ').lower()
-            if escolha == 's':
-               self.personagem.trabalhar(randint(10, 500))
+            if self.personagem.getIdade() > 18:
+               escolha = input('Deseja trabalhar? [S/N] ').lower()
+               if escolha == 's':
+                  self.personagem.trabalhar(randint(10, 500))
 
 
       if self.personagem.getSaude() <= 0:
@@ -114,14 +121,16 @@ class Jogo:
 
 
    def ocorrenciaDeEvento(self):
-      eventos = {
-         "Você encontrou um amigo!": (self.personagem.aumentarFelicidade, 10),
+      eventos= {
          "Você ficou doente!": (self.personagem.reducaoSaude, randint(10, 30)),
-         "Você foi promovido no trabalho!": (self.personagem.aumentarFelicidade, 20),
+         "Você encontrou um amigo!": (self.personagem.aumentarFelicidade, 10),
          "Você sofreu um acidente!": (self.personagem.reducaoSaude, randint(20, 50)),
+         "Você foi promovido no trabalho!": (self.personagem.aumentarFelicidade, 20),
          "Você ganhou na loteria!": (self.personagem.aumentarDinheiro, 250),
-         "Você foi roubado!": (self.personagem.reduzirDinheiro, 30)
+         "Você foi roubado!": (self.personagem.reduzirDinheiro, 30),
+         "Um parente seu faleceu!": (self.personagem.reduzirFelicidade, 50)
       }
+
       ocorrencia_de_evento = randint(1, 3)
       if ocorrencia_de_evento == 1:
          descricao_evento = choice(list(eventos.keys()))
