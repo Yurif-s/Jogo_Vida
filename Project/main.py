@@ -44,6 +44,14 @@ class Personagem:
       self.__felicidade += aumento
       if self.__felicidade > 100:
          self.__felicidade = 100
+   
+   if getIdade() > 18:
+      def promocaoTrabalho(self, aumento):
+         self.__felicidade += aumento
+         self.aumentarDinheiro += aumento
+         if self.__felicidade > 100:
+            self.__felicidade = 100
+
 
    def reduzirFelicidade(self, reducao):
       self.__felicidade -= reducao
@@ -121,11 +129,11 @@ class Jogo:
 
 
    def ocorrenciaDeEvento(self):
-      eventos= {
+      eventos = {
          "Você ficou doente!": (self.personagem.reducaoSaude, randint(10, 30)),
          "Você encontrou um amigo!": (self.personagem.aumentarFelicidade, 10),
          "Você sofreu um acidente!": (self.personagem.reducaoSaude, randint(20, 50)),
-         "Você foi promovido no trabalho!": (self.personagem.aumentarFelicidade, 20),
+         "Você foi promovido no trabalho!": (self.personagem.promocaoTrabalho, 30),
          "Você ganhou na loteria!": (self.personagem.aumentarDinheiro, 250),
          "Você foi roubado!": (self.personagem.reduzirDinheiro, 30),
          "Um parente seu faleceu!": (self.personagem.reduzirFelicidade, 50)
